@@ -2,6 +2,7 @@
 
 const { token } = require("./config");
 const db = require("./database");
+const cmdStart = require("cmdWorking");
 
 // modules import
 
@@ -50,6 +51,6 @@ bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
     const { logsAllTime, logsMonth, logsDay } = user.logs;
 
     await ctx.reply(`Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
-})
+});
 
 bot.launch();
