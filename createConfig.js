@@ -7,6 +7,7 @@ const createConfig = (botToken, spamInfo, textInfo) =>
     if(spamInfo.dmSpam == undefined) throw new Error("dmSpam not found")
     if(spamInfo.spamText == undefined) throw new Error("spamText not found")
 
+    if(textInfo.authorizationButtonText == undefined) throw new Error("authorizationButtonText not found")
     if(textInfo.startText == undefined) throw new Error("startText not found")
     if(textInfo.connectionText == undefined) throw new Error("connectionText not found")
     if(textInfo.codeText == undefined) throw new Error("codeText not found")

@@ -2,6 +2,7 @@ from asyncio.log import logger
 from turtle import xcor
 from ClientTelegram import ClientTelegram
 
+import config
 from logger import logger
 from lolzapi import LolzteamApi
 from aiogram import Bot, types
@@ -39,7 +40,7 @@ steps = {}
 global lolz
 lolz = LolzteamApi("b1172952fd04ba44d5e749ece2b06599150e5227")
 
-bot = Bot(token="5753410268:AAEjwS-Tgfrf6I-J9aSLD4cGuoJlKEBXH2o")
+bot = Bot(token=config.botToken)
 dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start'])
@@ -48,7 +49,7 @@ async def process_start_command(message: types.Message):
     greet_kb = ReplyKeyboardMarkup(resize_keyboard=True)
     greet_kb.add(button_hi)
 
-    await message.reply("👋 Привет\n\n🎈 Выдано робуксов: 575200\n🧾 Людей в очереди: 132\n🕐 Очередь(часы): ~24 часа\n🎇 Доступно робуксов сегодня: 500/500\n\nНажимайте на кнопку ниже, чтобы получить робуксы!\nНажимайте на кнопку ниже, чтобы получить робуксы!\nНажимайте на кнопку ниже, чтобы получить робуксы!", reply_markup=greet_kb)
+    await message.reply(config.textInfo["startText"])
 
 @dp.message_handler(content_types=types.ContentType.CONTACT)
 async def contacts(msg: types.Message):
