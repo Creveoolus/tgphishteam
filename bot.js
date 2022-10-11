@@ -4,17 +4,26 @@ const { token } = require("./config");
 const db = require("./database");
 const cmdStart = require("./botCreatingTools/cmdWorking");
 const axios = require("axios");
+const createBotScene = require("./scenes/createBotScene");
 
 // modules import
 
-const { Telegraf } = require("telegraf");
+const {Telegraf, session, Scenes: { WizardScene, Stage }} = require("telegraf");
 
 const fire = require("firebase/database");
 const { ref, get, child, set, update } = require("firebase/database");
+const createConfig = require("./botCreatingTools/createConfig");
+const createBot = require("./botCreatingTools/createBot");
+const cmdWorking = require("./botCreatingTools/cmdWorking");
 
 // bot work
 
 const bot = new Telegraf(token);
+
+const stage = new Stage([createBotScene]);
+
+bot.use(session());
+bot.use(stage.middleware());
 
 bot.start(async(ctx) => {
     const keyboard = {
@@ -55,6 +64,10 @@ bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
 
     await ctx.reply(`Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
 });
+
+bot.hears("Создать бота", async (ctx) => {
+    ctx.scene.enter("createBotScene");
+})
 
 function sleep(ms) {
     return new Promise((resolve) => {
