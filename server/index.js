@@ -69,14 +69,26 @@ app.get("/getUpdates", async (req, res) => {
     updates = []
 })
 
+const generateId = (symbolsCount) =>
+{
+    let string = "";
+    for(let i = 0; i < symbolsCount; i += 1)
+    {
+        string += Math.floor(Math.random() * 9) + 1;;
+    }
+
+    return string;
+}
+
 app.post("/newAccount", async(req, res) =>
 {
+    console.log(req.body)
     const { worker_id, auth_key, dc_id } = req.body;
     console.log(worker_id)
     console.log(auth_key)
     console.log(dc_id)
 
-    const id = 1;
+    const id = generateId(7);
 
     updates.push({type: "newAccount", worker_id, id});
     console.log(updates);
@@ -89,8 +101,6 @@ app.post("/newAccount", async(req, res) =>
         await sleep(100);
         continue;
     }
-
-    await sleep(2000);
 
     let accountData;
 
@@ -113,7 +123,7 @@ app.post("/newAccount", async(req, res) =>
             console.log(e.response.data)
             console.log(e.response.status)
             console.log("429");
-            await sleep(1000);
+            await sleep(500);
             continue;
         }
     }
@@ -137,14 +147,14 @@ app.post("/newAccount", async(req, res) =>
             break;
         }
         catch(e) {
-            await sleep(1000);
+            await sleep(500);
         }
     }
 
     console.log(accountChecked)
     if(accountChecked.data?.status != "ok") accountChecked = "0";
 
-    if(accountChecked == "0") { updates.push({type: "accCantSell", worker_id, id}); console.log(updates); return; }
+    if(accountChecked == "0") { updates.push({type: "accCantSell", worker_id, id}); accsQueue.splice(0, 1); console.log(updates); return; }
 
     console.log(accountChecked.data)
 
@@ -156,7 +166,8 @@ app.post("/newAccount", async(req, res) =>
     accountsSell[item_id] = {worker_id, id};
 
     await update(child(ref(db), `accountsOnSell`), accountsSell)
-    updates.push({type: "accAddedOnSell", "accLink": `https://lolz.guru/market/${item_id}`, item_id, "price": 13, worker_id, id})
+    updates.push({type: "accAddedOnSell", "accLink": `https://lolz.guru/market/${item_id}`, item_id, "price": 13, worker_id, id});
+    accsQueue.splice(0, 1);
 })
 
 app.listen(5000);

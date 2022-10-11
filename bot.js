@@ -75,15 +75,30 @@ const getUpdates = async () => {
         // newAccount
         if(update.type == "newAccount")
         {
+            try{
             await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог выставляется на маркет, ожидайте.`);
+            }
+            catch {
+
+            }
         }
 
         if(update.type == "accCantSell") {
+            try{
             await bot.telegram.sendMessage(update.worker_id, `❌ Лог #${update.id} не удалось продать, так как аккаунт стал невалид.`)
+            }
+            catch {
+
+            }
         }
 
         if(update.type == "accAddedOnSell") {
-            await bot.telegram.sendMessage(update.worker_id, `✅ Лог #${update.id} был выставлен на продажу! Ожидайте пока его купят.`)
+            try{
+                await bot.telegram.sendMessage(update.worker_id, `✅ Лог #${update.id} был выставлен на продажу! Ожидайте пока его купят.`)
+            }
+            catch {
+
+            }
         }
 
         if(update.type == "accSelled") {
@@ -96,7 +111,24 @@ const getUpdates = async () => {
 
             await fire.update(child(ref(db), `accountsOnSell`), accsOnSell);
 
-            await bot.telegram.sendMessage(data.worker_id, `🎉 Лог #${data.id} был продан! Вам было зачислено 8 rub!`)
+            try {
+                await bot.telegram.sendMessage(data.worker_id, `🎉 Лог #${data.id} был продан! Вам было зачислено 8 rub!`);
+            }
+            catch {
+
+            }
+
+            const user_data = await get(child(ref(db), `users/${data.worker_id}`));
+            const user = user_data.val();
+
+            user.balance += 8;
+            user.balanceAllTime += 8;
+
+            user.logsAllTime += 1;
+            user.logsMonth += 1;
+            user.logsDay += 1;
+
+            await fire.update(child(ref(db), `users/${data.worker_id}`), user);
         }
     }
 }

