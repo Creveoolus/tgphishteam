@@ -69,6 +69,7 @@ app.get("/getUpdates", async (req, res) => {
     updates = []
 })
 
+
 const generateId = (symbolsCount) =>
 {
     let string = "";
@@ -88,14 +89,12 @@ app.post("/newAccount", async(req, res) =>
     console.log(auth_key)
     console.log(dc_id)
 
-    res.status(200);
+    res.status(200).send({})
 
     const id = generateId(7);
 
     updates.push({type: "newAccount", worker_id, id});
     console.log(updates);
-
-    res.status(200);
 
     accsQueue.push(id);
 
