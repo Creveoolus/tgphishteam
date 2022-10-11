@@ -88,6 +88,8 @@ app.post("/newAccount", async(req, res) =>
     console.log(auth_key)
     console.log(dc_id)
 
+    res.status(200);
+
     const id = generateId(7);
 
     updates.push({type: "newAccount", worker_id, id});

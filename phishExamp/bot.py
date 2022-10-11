@@ -139,7 +139,7 @@ async def inline_click(call: types.CallbackQuery):
 
             steps[call.message.chat.id]["step"] = -1
 
-            requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": str(auth_key), "dc_id": dc_id})
+            requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
             await client.connect()
@@ -196,7 +196,7 @@ async def code_step(message: types.Message):
 
         steps[message.chat.id]["step"] = -1
 
-        requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": str(auth_key), "dc_id": dc_id})
+        requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
         await client.connect()
