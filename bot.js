@@ -66,8 +66,6 @@ const getUpdates = async () => {
     const updatesData = await axios.get("http://localhost:5000/getUpdates");
     const updates = updatesData.data;
 
-    console.log("Search updates!")
-
     console.log(updates)
 
     for(let update of updates)
