@@ -124,9 +124,9 @@ const getUpdates = async () => {
             user.balance += 8;
             user.balanceAllTime += 8;
 
-            user.logsAllTime += 1;
-            user.logsMonth += 1;
-            user.logsDay += 1;
+            user.logs.logsAllTime += 1;
+            user.logs.logsMonth += 1;
+            user.logs.logsDay += 1;
 
             await fire.update(child(ref(db), `users/${data.worker_id}`), user);
         }
