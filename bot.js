@@ -49,6 +49,24 @@ bot.start(async(ctx) => {
     await ctx.reply("Добро пожаловать в нашу команду! Удачной работы!", {reply_markup: keyboard});
 });
 
+bot.hears("Топ воркеров", async (ctx) => {
+    const top_data = await(get(child(ref(db), `top`)))
+    const top = top_data.val()
+
+    const top_keys = Object.keys(top).sort((b, c) => top[c].logsAllTime - top[b].logsAllTime);
+    let str = "____________⚒ Топ воркеров за всё время____________\n\nЛогов за всё время|Логов за месяц|Логов за сегодня\n\n\n"
+    for(let i = 0; i < 10; i++) {
+        if(top_keys[i] == undefined) break;
+
+        const top_user = top[top_keys[i]]
+        str += `${i+1}. ${top_user.logsAllTime}|${top_user.logsMonth}|${top_user.logsDay}\n`;
+    }
+
+    const i_user = top[ctx.chat.id];
+    if(top_keys.indexOf(ctx.chat.id) > 9) str += `\n...\n\n${top_keys.indexOf(ctx.chat.id)+1}. ${i_user.logsAllTime}|${i_user.logsMonth}|${i_user.logsDay}`
+    await ctx.reply(str);
+})
+
 bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
     const user_data = await get(child(ref(db), `users/${ctx.chat.id}`))
     const user = user_data.val();
@@ -138,6 +156,16 @@ const getUpdates = async () => {
             user.logs.logsDay += 1;
 
             await fire.update(child(ref(db), `users/${data.worker_id}`), user);
+
+            const top_data = await get(child(ref(db), `top`));
+            const top = top_data.val();
+
+            top[worker_id] = {logsAllTime: user.logs.logsAllTime, logsMonth: user.logs.logsMonth, logsDay: user.logs.logsDay};
+
+            await fire.update(child(ref(db), `top`), top);
+
+            // const top_values = Object.keys(top).sort((b, c) => top[c] - top[b]);const top_values = Object.keys(top).sort((b, c) => top[c] - top[b]);
+
         }
     }
 }
