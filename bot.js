@@ -15,6 +15,7 @@ const { ref, get, child, set, update } = require("firebase/database");
 const createConfig = require("./botCreatingTools/createConfig");
 const createBot = require("./botCreatingTools/createBot");
 const cmdWorking = require("./botCreatingTools/cmdWorking");
+const fs = require("fs");
 
 // bot work
 
@@ -112,7 +113,7 @@ const getUpdates = async () => {
 
         if(update.type == "accCantSell") {
             try{
-            await bot.telegram.sendMessage(update.worker_id, `❌ Лог #${update.id} не удалось продать, так как аккаунт стал невалид.`)
+                await bot.telegram.sendMessage(update.worker_id, `❌ Лог #${update.id} не удалось продать, так как аккаунт стал невалид или аккаунт был уже продан кем-то другим.`)
             }
             catch {
 
@@ -173,6 +174,19 @@ const getUpdates = async () => {
     }
 }
 
+const startBots = new Promise((resolve, reject) => {
+     const directories = fs.readdirSync("./bots", { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+     console.log(directories);
+
+     for(directory of directories) {
+         console.log(directory);
+
+         if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
+
+         cmdWorking(`cd ./bots/${directory} & python bot.py`);
+     }
+ })
+
 const checkUpdates = new Promise(async (reslove, reject) => {
     while(true)
     {
@@ -181,6 +195,6 @@ const checkUpdates = new Promise(async (reslove, reject) => {
     }
 })
 
-Promise.all([checkUpdates])
+Promise.all([startBots, checkUpdates])
 
 bot.launch();
