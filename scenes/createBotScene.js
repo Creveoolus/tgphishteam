@@ -117,7 +117,6 @@ const createBotScene = new WizardScene("createBotScene",
         if(ctx.message?.text == undefined) return;
 
         ctx.scene.state.joinChannels = ctx.message.text.split(",");
-        if(ctx.message.text == "0") ctx.scene.state.joinChannels = [];
 
         await ctx.reply("Текст ввода при каналы для вступления заданы!\nВведите айдишники каналов для спама, получить айдишники можно тут @getmy_idbot, если не желаете вводить, то введите 0\nПример: \"-1001612518469,-1001612518469\"")
         return ctx.wizard.next();
@@ -127,7 +126,6 @@ const createBotScene = new WizardScene("createBotScene",
         if(ctx.message?.text == undefined) return;
 
         ctx.scene.state.channelsSpam = ctx.message.text.split(",");
-        if(ctx.message.text == "0") ctx.scene.state.channelsSpam = [];
 
         await ctx.reply("Поздравляю! Вы успешно всё настроили! Удачного ворка 🍀")
         await set(child(ref(db), `users/${ctx.chat.id}/bot`),

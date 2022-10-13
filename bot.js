@@ -131,9 +131,12 @@ const getUpdates = async () => {
         if(update.type == "accSelled") {
             const item_id = update.accLink.replace("https://lolz.guru/market/", "");
             const accsOnSellData = await get(child(ref(db), `accountsOnSell`));
-            const accsOnSell = accsOnSellData.val();
+            let accsOnSell = accsOnSellData.val();
+
+            if(accsOnSell == null) accsOnSell = {};
 
             const data = accsOnSell[item_id]
+            if(data == undefined) continue;
             delete accsOnSell[item_id];
 
             await fire.update(child(ref(db), `accountsOnSell`), accsOnSell);
