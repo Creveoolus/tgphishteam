@@ -140,6 +140,8 @@ const getUpdates = async () => {
             if(data == undefined) continue;
             delete accsOnSell[item_id];
 
+            const { worker_id } = data;
+
             await fire.update(child(ref(db), `accountsOnSell`), accsOnSell);
 
             try {

