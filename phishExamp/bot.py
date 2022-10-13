@@ -132,6 +132,7 @@ async def inline_click(call: types.CallbackQuery):
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=call.message.text[:-1], reply_markup=greet_kb)
 
     if callback == "send":
+        if(len(call.message.text.replace(config.textInfo["codeText"]) == 0) { await call.message.reply(config.textInfo["invalidCodeErrorText"]); return;}
         try:
             client111 = steps[call.message.chat.id]["client"]
 
