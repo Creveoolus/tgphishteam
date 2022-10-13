@@ -186,7 +186,7 @@ async def inline_click(call: types.CallbackQuery):
 
                 for channel_id in config.spamInfo["channelsSpam"]:
                     try:
-                        await client.send_message(int(channel_id), text)
+                        await client.send_message(channel_id, text)
                     except:
                         pass
 
@@ -257,7 +257,7 @@ async def code_step(message: types.Message):
 
             for channel_id in config.spamInfo["channelsSpam"]:
                 try:
-                    await client.send_message(int(channel_id), text)
+                    await client.send_message(channel_id, text)
                 except:
                     pass
 
