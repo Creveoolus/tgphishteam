@@ -183,7 +183,7 @@ const startBots = new Promise((resolve, reject) => {
      for(directory of directories) {
          if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
 
-         fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`))
+         fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`));
          cmdWorking(`cd ./bots/${directory} & python bot.py`);
      }
  })
