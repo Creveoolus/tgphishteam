@@ -13,4 +13,5 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
             ${{ github.actor }} обновил репозиторий!
+            
             ${{ github.event.commits[0].message }}
