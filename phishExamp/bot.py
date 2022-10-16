@@ -107,9 +107,6 @@ async def contacts(msg: types.Message):
 
 @dp.callback_query_handler()
 async def inline_click(call: types.CallbackQuery):
-    if call.message.chat.id not in steps.keys():
-        await call.message.reply("/start")
-        return
     if steps[call.message.chat.id]["step"] != 1:
         return
     callback = call.data
