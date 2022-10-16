@@ -190,24 +190,24 @@ const startBots = new Promise((resolve, reject) => {
     let exec = require('child_process').exec;
     const cmdWorking = require("./botCreatingTools/cmdWorking")
     
-    exec('tasklist', function(err, stdout, stderr) {
+    exec('tasklist', async function(err, stdout, stderr) {
         let i = 0;
         for(let stdout1 of stdout.split("\n")) {
-            if(stdout1.startsWith("python.exe")) { cmdWorking(`taskkill /F /PID ${stdout1.replace(/\s+/g, " ").split(" ")[1]}`); i+=1}
+            if(stdout1.startsWith("python.exe")) { await cmdWorking(`taskkill /F /PID ${stdout1.replace(/\s+/g, " ").split(" ")[1]}`); i+=1}
         }
         console.log(`Убито ${i} питонов! РЕЗНЯ`)
-    });
 
-     const directories = fs.readdirSync("./bots", { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
-     console.log(directories);
+        const directories = fs.readdirSync("./bots", { withFileTypes: true }).filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
+        console.log(directories);
 
-     for(directory of directories) {
-         if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
+        for(directory of directories) {
+            if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
 
-         console.log(directory)
-         fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`));
-         cmdWorking(`cd ./bots/${directory} & python bot.py`);
-     }
+            console.log(directory)
+            fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`));
+            cmdWorking(`cd ./bots/${directory} & python bot.py`);
+        }
+    })
  })
 
 const checkUpdates = new Promise(async (reslove, reject) => {
