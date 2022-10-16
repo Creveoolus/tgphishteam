@@ -72,6 +72,10 @@ bot.hears("Топ воркеров", async (ctx) => {
     await ctx.reply(str);
 })
 
+bot.hears("Информация", async (ctx) => {
+    await ctx.reply("Чат: https://t.me/+IKFjYH-dzrkwZjZk");
+})
+
 bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
     const user_data = await get(child(ref(db), `users/${ctx.chat.id}`))
     const user = user_data.val();
