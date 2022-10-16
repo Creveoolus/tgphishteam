@@ -83,7 +83,6 @@ const generateId = (symbolsCount) =>
 
 app.post("/newAccount", async(req, res) =>
 {
-    console.log(req.body)
     const { worker_id, auth_key, dc_id } = req.body;
     console.log(worker_id)
     console.log(auth_key)

