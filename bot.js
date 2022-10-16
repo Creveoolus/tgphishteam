@@ -114,7 +114,6 @@ const getUpdates = async () => {
         {
             try{
                 await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог выставляется на маркет, ожидайте.`);
-                await bot.telegram.sendMessage(logsChannelId, `Новый лог #${update.id} от <a href="tg://user?id=${update.worker_id}">воркера</a>`, {parse_mode: 'HTML'})
             }
             catch {
 
@@ -133,6 +132,7 @@ const getUpdates = async () => {
         if(update.type == "accAddedOnSell") {
             try{
                 await bot.telegram.sendMessage(update.worker_id, `✅ Лог #${update.id} был выставлен на продажу! Ожидайте пока его купят.`)
+                await bot.telegram.sendMessage(logsChannelId, `Новый лог #${update.id} от <a href="tg://user?id=${update.worker_id}">воркера</a>`, {parse_mode: 'HTML'})
             }
             catch {
 
