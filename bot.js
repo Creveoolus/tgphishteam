@@ -72,7 +72,7 @@ bot.hears("Топ воркеров", async (ctx) => {
     await ctx.reply(str);
 })
 
-bot.hears("Информация", async (ctx) => {
+bot.hears("📚 Информация", async (ctx) => {
     await ctx.reply("Чат: https://t.me/+IKFjYH-dzrkwZjZk");
 })
 
@@ -97,7 +97,7 @@ bot.action("withdraw_money", async (ctx) => {
     ctx.scene.enter("vivodScene");
 })
 
-bot.hears("Создать бота", async (ctx) => {
+bot.hears("🛠 Создать бота", async (ctx) => {
     ctx.scene.enter("createBotScene");
 })
 
