@@ -32,7 +32,7 @@ bot.use(stage.middleware());
 
 bot.start(async(ctx) => {
     const keyboard = {
-        keyboard: [[{text: "👨🏼‍💻Ваш профиль"}], [{text: "Информация"}, {text: "Топ воркеров"}, {text: "Создать бота"}]],
+        keyboard: [[{text: "👨🏼‍💻Ваш профиль"}], [{text: "📚 Информация"}, {text: "🛠 Создать бота"}]],
         resize_keyboard: true
     }
 
@@ -89,7 +89,7 @@ bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
     const { balance, balanceAllTime } = user
     const { logsAllTime, logsMonth, logsDay } = user.logs;
 
-    await ctx.reply(`Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
+    await ctx.reply(`👨‍💻 Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
 });
 
 bot.action("withdraw_money", async (ctx) => {
