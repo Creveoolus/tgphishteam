@@ -39,7 +39,6 @@ def StopFunction():
 
         os.remove("stop.stop")
 
-        dp.stop_polling()
         psutil.Process(os.getpid()).terminate()
 
 global steps
