@@ -112,8 +112,8 @@ app.post("/newAccount", async(req, res) =>
                     "item_origin": "fishing",
                     "extended_guarantee": 0,
                     "price": 8,
-                    "title": "Телеграм // фишинг // 8 рублей",
-                    "title_en": "Telegram // Fishing // 8 rub"
+                    "title": "ПОД ЛЮБЫЕ ЦЕЛИ // ЛУЧШЕЕ КАЧЕСТВО // 8 рублей",
+                    "title_en": "FOR ANY PURPOSE // BEST QUALITY // 8 rub"
             }, headers: {"Authorization": `Bearer ${config.lolzToken}`}})
 
             break;
