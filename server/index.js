@@ -18,52 +18,6 @@ function sleep(ms) {
     });
 }
 
-const getUpdates = async () => {
-    try {
-        const selledAccs_data_now = await axios.get(`https://api.lolz.guru/market/user/${config.lolzId}/items?oauth_token=${config.lolzToken}&show=paid`);
-        const selledAccs_now = selledAccs_data_now.data.items;
-
-        if (selledAccs.length == 0) selledAccs = selledAccs_now.map(selledAcc => selledAcc.item_id);
-
-        for (let selledAcc of selledAccs_now) {
-            if (selledAcc.item_id == selledAccs[0]) {
-                if(selledAccs_now.length != selledAccs.length) console.log("блять");
-                break;
-            }
-
-            console.log({
-                "type": "accSelled",
-                "accLink": `https://lolz.guru/market/${selledAcc.item_id}`,
-                "price": selledAcc.price
-            })
-
-            updates.push({
-                "type": "accSelled",
-                "accLink": `https://lolz.guru/market/${selledAcc.item_id}`,
-                "price": selledAcc.price
-            });
-        }
-
-        selledAccs = selledAccs_now.map(selledAcc => selledAcc.item_id);
-
-        console.log("Get updates!");
-        return;
-    }
-    catch {
-        console.log("catch")
-    }
-}
-
-const checkUpdates = new Promise(async (reslove, reject) => {
-    while(true)
-    {
-        await getUpdates();
-        await sleep(1000);
-    }
-})
-
- Promise.all([checkUpdates])
-
 app.get("/getUpdates", async (req, res) => {
     res.status(200).send(updates);
     updates = []
@@ -120,9 +74,6 @@ app.post("/newAccount", async(req, res) =>
         }
         catch (e)
         {
-            console.log(e.response.data)
-            console.log(e.response.status)
-            console.log("429");
             await sleep(500);
             continue;
         }
@@ -154,19 +105,8 @@ app.post("/newAccount", async(req, res) =>
     console.log(accountChecked)
     if(accountChecked.data?.status != "ok") accountChecked = "0";
 
-    if(accountChecked == "0") { updates.push({type: "accCantSell", worker_id, id}); accsQueue.splice(0, 1); console.log(updates); return; }
+    if(accountChecked == "0") return;
 
-    console.log(accountChecked.data)
-
-    const accountsOnSell = await get(child(ref(db), `/accountsOnSell`));
-    let accountsSell = accountsOnSell.val();
-
-    if(accountsSell == null) accountsSell = {}
-
-    accountsSell[item_id] = {worker_id, id};
-
-    await update(child(ref(db), `accountsOnSell`), accountsSell)
-    updates.push({type: "accAddedOnSell", "accLink": `https://lolz.guru/market/${item_id}`, item_id, "price": 13, worker_id, id});
     accsQueue.splice(0, 1);
 })
 

